@@ -1,5 +1,4 @@
 import React from 'react'
-import './Rating.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faStarHalfStroke, faStar } from '@fortawesome/free-solid-svg-icons'
 import { faStar as emptyStar } from '@fortawesome/free-regular-svg-icons'
