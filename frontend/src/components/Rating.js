@@ -2,7 +2,7 @@ import React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faStarHalfStroke, faStar } from '@fortawesome/free-solid-svg-icons'
 import { faStar as emptyStar } from '@fortawesome/free-regular-svg-icons'
-export default function Rating({ rating, numReviews }) {
+export default function Rating({ rating, numReviews, caption }) {
     return (
         <>
             <span className="rating">
@@ -53,7 +53,12 @@ export default function Rating({ rating, numReviews }) {
                     }
                 />
             </span>
-            <span className="num-ratings"> {numReviews}</span>
+            {/* {caption &&  <span className="num-ratings"> {numReviews}</span>}*/}
+            {caption ? (
+                <span>{caption}</span>
+            ) : (
+                <span className="num-ratings"> {numReviews}</span>
+            )}
         </>
     )
 }
