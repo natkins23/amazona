@@ -154,59 +154,49 @@ export default function PlaceOrderScreen() {
                     <Card className="mb-3">
                         <Card.Body>
                             <Card.Title>Order Summary</Card.Title>
-                            <Card.Text>
-                                <ListGroup variant="flush">
-                                    <ListGroup.Item className="align-items-center">
-                                        <Row>
-                                            <Col md={8}>Items</Col>
-                                            <Col>
-                                                ${cart.itemsPrice.toFixed(2)}
-                                            </Col>
-                                        </Row>
-                                    </ListGroup.Item>
-                                    <ListGroup.Item className="align-items-center">
-                                        <Row>
-                                            <Col md={8}>Shipping</Col>
-                                            <Col>
-                                                ${cart.shippingPrice.toFixed(2)}
-                                            </Col>
-                                        </Row>
-                                    </ListGroup.Item>
+                            <ListGroup variant="flush">
+                                <ListGroup.Item className="align-items-center">
+                                    <Row>
+                                        <Col md={8}>Items</Col>
+                                        <Col>${cart.itemsPrice.toFixed(2)}</Col>
+                                    </Row>
+                                </ListGroup.Item>
+                                <ListGroup.Item className="align-items-center">
+                                    <Row>
+                                        <Col md={8}>Shipping</Col>
+                                        <Col>
+                                            ${cart.shippingPrice.toFixed(2)}
+                                        </Col>
+                                    </Row>
+                                </ListGroup.Item>
 
-                                    <ListGroup.Item className="align-items-center">
-                                        <Row>
-                                            <Col md={8}>Tax</Col>
-                                            <Col>
-                                                ${cart.taxPrice.toFixed(2)}
-                                            </Col>
-                                        </Row>
-                                    </ListGroup.Item>
+                                <ListGroup.Item className="align-items-center">
+                                    <Row>
+                                        <Col md={8}>Tax</Col>
+                                        <Col>${cart.taxPrice.toFixed(2)}</Col>
+                                    </Row>
+                                </ListGroup.Item>
 
-                                    <ListGroup.Item className="align-items-center">
-                                        <Row>
-                                            <Col md={8}>
-                                                {' '}
-                                                <strong>Order Total</strong>
-                                            </Col>
-                                            <Col>
-                                                ${cart.totalPrice.toFixed(2)}
-                                            </Col>
-                                        </Row>
-                                    </ListGroup.Item>
-                                    <div className="d-grid">
-                                        <Button
-                                            type="button"
-                                            onClick={placeOrderHandler}
-                                            disabled={
-                                                cart.cartItems.length === 0
-                                            }
-                                        >
-                                            Place Order
-                                        </Button>
-                                        {loading && <LoadingBox></LoadingBox>}
-                                    </div>
-                                </ListGroup>
-                            </Card.Text>
+                                <ListGroup.Item className="align-items-center">
+                                    <Row>
+                                        <Col md={8}>
+                                            {' '}
+                                            <strong>Order Total</strong>
+                                        </Col>
+                                        <Col>${cart.totalPrice.toFixed(2)}</Col>
+                                    </Row>
+                                </ListGroup.Item>
+                                <div className="d-grid">
+                                    <Button
+                                        type="button"
+                                        onClick={placeOrderHandler}
+                                        disabled={cart.cartItems.length === 0}
+                                    >
+                                        Place Order
+                                    </Button>
+                                    {loading && <LoadingBox></LoadingBox>}
+                                </div>
+                            </ListGroup>
                         </Card.Body>
                     </Card>
                 </Col>

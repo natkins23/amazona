@@ -80,7 +80,6 @@ productRouter.get(
             ...priceFilter,
             ...ratingFilter,
         })
-        
         res.send({
             products,
             countProducts,

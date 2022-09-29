@@ -220,68 +220,61 @@ export default function OrderScreen() {
                     <Card className="mb-3">
                         <Card.Body>
                             <Card.Title>Order Summary</Card.Title>
-                            <Card.Text>
-                                <ListGroup variant="flush">
-                                    <ListGroup.Item className="align-items-center">
-                                        <Row>
-                                            <Col md={8}>Items</Col>
-                                            <Col>
-                                                ${order.itemsPrice.toFixed(2)}
-                                            </Col>
-                                        </Row>
-                                    </ListGroup.Item>
-                                    <ListGroup.Item className="align-items-center">
-                                        <Row>
-                                            <Col md={8}>Shipping</Col>
-                                            <Col>
-                                                $
-                                                {order.shippingPrice.toFixed(2)}
-                                            </Col>
-                                        </Row>
-                                    </ListGroup.Item>
+                            <ListGroup variant="flush">
+                                <ListGroup.Item className="align-items-center">
+                                    <Row>
+                                        <Col md={8}>Items</Col>
+                                        <Col>
+                                            ${order.itemsPrice.toFixed(2)}
+                                        </Col>
+                                    </Row>
+                                </ListGroup.Item>
+                                <ListGroup.Item className="align-items-center">
+                                    <Row>
+                                        <Col md={8}>Shipping</Col>
+                                        <Col>
+                                            ${order.shippingPrice.toFixed(2)}
+                                        </Col>
+                                    </Row>
+                                </ListGroup.Item>
 
-                                    <ListGroup.Item className="align-items-center">
-                                        <Row>
-                                            <Col md={8}>Tax</Col>
-                                            <Col>
-                                                ${order.taxPrice.toFixed(2)}
-                                            </Col>
-                                        </Row>
-                                    </ListGroup.Item>
+                                <ListGroup.Item className="align-items-center">
+                                    <Row>
+                                        <Col md={8}>Tax</Col>
+                                        <Col>${order.taxPrice.toFixed(2)}</Col>
+                                    </Row>
+                                </ListGroup.Item>
 
-                                    <ListGroup.Item className="align-items-center">
-                                        <Row>
-                                            <Col md={8}>
-                                                {' '}
-                                                <strong>Order Total</strong>
-                                            </Col>
-                                            <Col>
-                                                ${order.totalPrice.toFixed(2)}
-                                            </Col>
-                                        </Row>
+                                <ListGroup.Item className="align-items-center">
+                                    <Row>
+                                        <Col md={8}>
+                                            {' '}
+                                            <strong>Order Total</strong>
+                                        </Col>
+                                        <Col>
+                                            ${order.totalPrice.toFixed(2)}
+                                        </Col>
+                                    </Row>
+                                </ListGroup.Item>
+                                {!order.isPaid && (
+                                    <ListGroup.Item>
+                                        {isPending ? (
+                                            <LoadingBox />
+                                        ) : (
+                                            <div>
+                                                <PayPalButtons
+                                                    createOrder={createOrder}
+                                                    onApprove={onApprove}
+                                                    onError={onError}
+                                                ></PayPalButtons>
+                                            </div>
+                                        )}
+                                        {loadingPay && (
+                                            <LoadingBox></LoadingBox>
+                                        )}
                                     </ListGroup.Item>
-                                    {!order.isPaid && (
-                                        <ListGroup.Item>
-                                            {isPending ? (
-                                                <LoadingBox />
-                                            ) : (
-                                                <div>
-                                                    <PayPalButtons
-                                                        createOrder={
-                                                            createOrder
-                                                        }
-                                                        onApprove={onApprove}
-                                                        onError={onError}
-                                                    ></PayPalButtons>
-                                                </div>
-                                            )}
-                                            {loadingPay && (
-                                                <LoadingBox></LoadingBox>
-                                            )}
-                                        </ListGroup.Item>
-                                    )}
-                                </ListGroup>
-                            </Card.Text>
+                                )}
+                            </ListGroup>
                         </Card.Body>
                     </Card>
                 </Col>

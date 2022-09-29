@@ -26,6 +26,9 @@ import axios from 'axios'
 import { getError } from './utils'
 import SearchBox from './components/SearchBox'
 import SearchScreen from './screens/SearchScreen'
+import ProtectedRoute from './components/ProtectedRoute'
+import AdminRoute from './components/AdminRoute'
+import DashboardScreen from './screens/DashboardScreen'
 
 function App() {
     const { state, dispatch: ctxDispatch } = useContext(Store)
@@ -119,6 +122,33 @@ function App() {
                                             Sign In
                                         </Link>
                                     )}
+                                    {userInfo && userInfo.isAdmin && (
+                                        <NavDropdown
+                                            title={`Admin`}
+                                            id="basic-nav-dropdown"
+                                        >
+                                            <LinkContainer to="/admin/dashboard">
+                                                <NavDropdown.Item>
+                                                    Dashboard
+                                                </NavDropdown.Item>
+                                            </LinkContainer>
+                                            <LinkContainer to="/admin/productlist">
+                                                <NavDropdown.Item>
+                                                    Products
+                                                </NavDropdown.Item>
+                                            </LinkContainer>
+                                            <LinkContainer to="/admin/orderlist">
+                                                <NavDropdown.Item>
+                                                    Orders
+                                                </NavDropdown.Item>
+                                            </LinkContainer>
+                                            <LinkContainer to="/admin/userlist">
+                                                <NavDropdown.Item>
+                                                    Users
+                                                </NavDropdown.Item>
+                                            </LinkContainer>
+                                        </NavDropdown>
+                                    )}
                                 </Nav>
                             </Navbar.Collapse>
                         </Container>
@@ -156,12 +186,14 @@ function App() {
                             <Route path="/signin" element={<SigninScreen />} />
                             <Route path="/signup" element={<SignupScreen />} />
                             <Route path="/search" element={<SearchScreen />} />
-
                             <Route
                                 path="/profile"
-                                element={<ProfileScreen />}
+                                element={
+                                    <ProtectedRoute>
+                                        <ProfileScreen />
+                                    </ProtectedRoute>
+                                }
                             />
-
                             <Route
                                 path="/shipping"
                                 element={<ShippingAddressScreen />}
@@ -180,13 +212,26 @@ function App() {
                             />
                             <Route
                                 path="/orderhistory"
-                                element={<OrderHistoryScreen />}
+                                element={
+                                    <ProtectedRoute>
+                                        <OrderHistoryScreen />
+                                    </ProtectedRoute>
+                                }
                             />
-
                             <Route
                                 path="/product/:slug"
                                 element={<ProductScreen />}
                             />
+                            {/* Admin Routes */}
+                            <Route
+                                path="/admin/dashboard"
+                                element={
+                                    <AdminRoute>
+                                        <DashboardScreen></DashboardScreen>
+                                    </AdminRoute>
+                                }
+                            />
+
                             <Route path="/" element={<HomeScreen />} />
                         </Routes>
                     </Container>
