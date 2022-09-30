@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useReducer } from 'react'
 import axios from 'axios'
-import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Store } from '../Store'
 import LoadingBox from '../components/LoadingBox'
 import MessageBox from '../components/MessageBox'

@@ -1,54 +1,61 @@
-import axios from 'axios'
 import React, { useContext, useEffect, useReducer, useState } from 'react'
-import Container from 'react-bootstrap/Container'
-import Button from 'react-bootstrap/Button'
-import Form from 'react-bootstrap/Form'
-
-import { Helmet } from 'react-helmet-async'
 import { useNavigate, useParams } from 'react-router-dom'
-import LoadingBox from '../components/LoadingBox'
-import MessageBox from '../components/MessageBox'
+import { toast } from 'react-toastify'
+import axios from 'axios'
 import { Store } from '../Store'
 import { getError } from '../utils'
-import { toast } from 'react-toastify'
-
+import Container from 'react-bootstrap/Container'
+import Form from 'react-bootstrap/Form'
+import { Helmet } from 'react-helmet-async'
+import LoadingBox from '../components/LoadingBox'
+import MessageBox from '../components/MessageBox'
+import Button from 'react-bootstrap/Button'
 const reducer = (state, action) => {
     switch (action.type) {
         case 'FETCH_REQUEST':
             return { ...state, loading: true }
         case 'FETCH_SUCCESS':
-            return {
-                ...state,
-                loading: false,
-            }
+            return { ...state, loading: false }
         case 'FETCH_FAIL':
             return { ...state, loading: false, error: action.payload }
         case 'UPDATE_REQUEST':
             return { ...state, loadingUpdate: true }
         case 'UPDATE_SUCCESS':
-            return {
-                ...state,
-                loadingUpdate: false,
-            }
+            return { ...state, loadingUpdate: false }
         case 'UPDATE_FAIL':
             return { ...state, loadingUpdate: false }
+        case 'UPLOAD_REQUEST':
+            return { ...state, loadingUpload: true, errorUpload: '' }
+        case 'UPLOAD_SUCCESS':
+            return {
+                ...state,
+                loadingUpload: false,
+                errorUpload: '',
+            }
+        case 'UPLOAD_FAIL':
+            return {
+                ...state,
+                loadingUpload: false,
+                errorUpload: action.payload,
+            }
 
         default:
             return state
     }
 }
-
 export default function ProductEditScreen() {
+    const navigate = useNavigate()
+    const params = useParams() // /product/:id
+    const { id: productId } = params
+
     const { state } = useContext(Store)
     const { userInfo } = state
 
-    const params = useParams()
-    const navigate = useNavigate()
-    const { id: productId } = params
-    const [{ loading, error, loadingUpdate }, dispatch] = useReducer(reducer, {
-        loading: true,
-        error: '',
-    })
+    const [{ loading, error, loadingUpdate, loadingUpload }, dispatch] =
+        useReducer(reducer, {
+            loading: true,
+            error: '',
+        })
 
     const [name, setName] = useState('')
     const [slug, setSlug] = useState('')
@@ -58,7 +65,6 @@ export default function ProductEditScreen() {
     const [countInStock, setCountInStock] = useState('')
     const [brand, setBrand] = useState('')
     const [description, setDescription] = useState('')
-
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -74,12 +80,14 @@ export default function ProductEditScreen() {
                 setDescription(data.description)
                 dispatch({ type: 'FETCH_SUCCESS' })
             } catch (err) {
-                dispatch({ type: 'FETCH_FAIL', payload: getError(err) })
+                dispatch({
+                    type: 'FETCH_FAIL',
+                    payload: getError(err),
+                })
             }
         }
         fetchData()
-    }, [])
-
+    }, [productId])
     const submitHandler = async (e) => {
         e.preventDefault()
         try {
@@ -97,13 +105,39 @@ export default function ProductEditScreen() {
                     countInStock,
                     description,
                 },
-                { headers: { authorization: `Bearer ${userInfo.token}` } }
+                {
+                    headers: { Authorization: `Bearer ${userInfo.token}` },
+                }
             )
-            dispatch({ type: 'UPDATE_SUCCESS' })
-            navigate(`/admin/products`)
+            dispatch({
+                type: 'UPDATE_SUCCESS',
+            })
+            toast.success('Product updated successfully')
+            navigate('/admin/products')
         } catch (err) {
             toast.error(getError(err))
             dispatch({ type: 'UPDATE_FAIL' })
+        }
+    }
+    const uploadFileHandler = async (e) => {
+        const file = e.target.files[0]
+        const bodyFormData = new FormData()
+        bodyFormData.append('file', file)
+        try {
+            dispatch({ type: 'UPLOAD_REQUEST' })
+            const { data } = await axios.post('/api/upload', bodyFormData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    authorization: `Bearer ${userInfo.token}`,
+                },
+            })
+            dispatch({ type: 'UPLOAD_SUCCESS' })
+
+            toast.success('Image uploaded successfully')
+            setImage(data.secure_url)
+        } catch (err) {
+            toast.error(getError(err))
+            dispatch({ type: 'UPLOAD_FAIL', payload: getError(err) })
         }
     }
     return (
@@ -111,13 +145,13 @@ export default function ProductEditScreen() {
             <Helmet>
                 <title>Edit Product ${productId}</title>
             </Helmet>
-            <h1>Edit Product ${productId}</h1>
+            <h1>Edit Product {productId}</h1>
             {loading ? (
                 <LoadingBox></LoadingBox>
             ) : error ? (
                 <MessageBox variant="danger">{error}</MessageBox>
             ) : (
-                <Form>
+                <Form onSubmit={submitHandler}>
                     <Form.Group className="mb-3" controlId="name">
                         <Form.Label>Name</Form.Label>
                         <Form.Control
@@ -134,7 +168,7 @@ export default function ProductEditScreen() {
                             required
                         />
                     </Form.Group>
-                    <Form.Group className="mb-3" controlId="price">
+                    <Form.Group className="mb-3" controlId="name">
                         <Form.Label>Price</Form.Label>
                         <Form.Control
                             value={price}
@@ -150,6 +184,15 @@ export default function ProductEditScreen() {
                             required
                         />
                     </Form.Group>
+                    <Form.Group className="mb-3" controlId="imageFile">
+                        <Form.Label>Upload File</Form.Label>
+                        <Form.Control
+                            type="file"
+                            onChange={uploadFileHandler}
+                        />
+                        {loadingUpload && <LoadingBox></LoadingBox>}
+                    </Form.Group>
+
                     <Form.Group className="mb-3" controlId="category">
                         <Form.Label>Category</Form.Label>
                         <Form.Control
@@ -182,8 +225,8 @@ export default function ProductEditScreen() {
                             required
                         />
                     </Form.Group>
-                    <div>
-                        <Button type="submit" onClick={submitHandler}>
+                    <div className="mb-3">
+                        <Button disabled={loadingUpdate} type="submit">
                             Update
                         </Button>
                         {loadingUpdate && <LoadingBox></LoadingBox>}
