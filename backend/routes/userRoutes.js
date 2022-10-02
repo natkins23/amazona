@@ -2,9 +2,74 @@ import express from 'express'
 import bcrypt from 'bcryptjs'
 import expressAsyncHandler from 'express-async-handler'
 import User from '../models/userModel.js'
-import { generateToken, isAuth } from '../utils.js'
+import { generateToken, isAuth, isAdmin } from '../utils.js'
 
 const userRouter = express.Router()
+
+userRouter.get(
+    '/',
+    isAuth,
+    isAdmin,
+    expressAsyncHandler(async (req, res) => {
+        const users = await User.find({})
+        res.send(users)
+    })
+)
+
+userRouter.get(
+    '/:id',
+    isAuth,
+    isAdmin,
+    expressAsyncHandler(async (req, res) => {
+        const userId = req.params.id
+        const user = await User.findById(userId)
+        if (user) {
+            res.send(user)
+        } else {
+            res.status(404).send({ message: 'Product Not Found' })
+        }
+    })
+)
+
+userRouter.put(
+    '/:id',
+    isAuth,
+    isAdmin,
+    expressAsyncHandler(async (req, res) => {
+        const userId = req.params.id
+        const user = await User.findById(userId)
+
+        if (user) {
+            user.name = req.body.name || user.name
+            user.email = req.body.email || user.email
+            user.isAdmin = Boolean(req.body.isAdmin)
+            const updatedUser = await user.save()
+            res.send({ message: 'User Updated', user: updatedUser })
+        } else {
+            res.status(404).send({ message: 'Product Not Found' })
+        }
+    })
+)
+
+userRouter.delete(
+    '/:id',
+    isAuth,
+    isAdmin,
+    expressAsyncHandler(async (req, res) => {
+        const userId = req.params.id
+        const user = await User.findById(userId)
+        if (user) {
+            if (user.email === 'nathancwatkins23@gmail.com') {
+                res.status(404).send({ message: 'Can Not Delete Admin User' })
+                return
+            }
+            await user.remove()
+            res.send({ message: 'User Deleted' })
+        } else {
+            res.status(404).send({ message: 'User does not exist' })
+        }
+    })
+)
 
 userRouter.post(
     '/signin',
